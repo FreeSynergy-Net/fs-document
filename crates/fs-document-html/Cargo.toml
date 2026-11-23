@@ -1,12 +1,16 @@
 [package]
 name = "fs-document-html"
-description = "FreeSynergy text to HTML: the Exporter for HTML, the page frame with a short navigation, and the safe pass-through of user files"
+description = "HTML output of the fs-document model: an Exporter for HTML, the page frame with a short navigation, and the safe pass-through of user files. Built with help from Claude (AI)"
+readme = "README.md"
 edition.workspace = true
 license.workspace = true
 version.workspace = true
+rust-version.workspace = true
+# repository.workspace = true  # set after the repository exists
+
 
 [dependencies]
-fs-document = { path = "../fs-document" }
+fs-document = { path = "../fs-document", version = "0.0.1" }
 sha2 = "0.10"
 
 [target.'cfg(unix)'.dependencies]

@@ -1,9 +1,13 @@
 [package]
 name = "fs-document"
-description = "FreeSynergy wiki text core: rope text + stand-off mark layers, Markdown, undo"
+description = "Document model of FreeSynergy: rope text with stand-off mark layers, blocks, Markdown import and export, history. A plain library: no store, no GUI. Built with help from Claude (AI)"
+readme = "README.md"
 edition.workspace = true
 license.workspace = true
 version.workspace = true
+rust-version.workspace = true
+# repository.workspace = true  # set after the repository exists
+
 
 [dependencies]
 ropey = "1.6"

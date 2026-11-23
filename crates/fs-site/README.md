@@ -36,3 +36,9 @@ of one source are byte-identical. A value that is not a number is refused.
 
 Every problem is listed at once; if one stops the build, nothing is written.
 Menu labels, footer and folder titles are one text for all languages (no per-language text yet).
+
+## About
+
+Part of the `fs-document` workspace; built with help from Claude (AI). Limits: a site is built from a
+folder only (no store source yet); byte-exact copying of your own files works on Unix only
+(other systems refuse with a clear error). Licence: MIT OR Apache-2.0.

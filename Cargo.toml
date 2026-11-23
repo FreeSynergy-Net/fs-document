@@ -5,7 +5,6 @@ members = ["crates/fs-document", "crates/fs-document-html", "crates/fs-site"]
 [workspace.package]
 edition = "2021"
 license = "MIT OR Apache-2.0"
-version = "0.0.13"
-authors = ["FreeSynergy <support@freesynergy.net>"]
-repository = "https://github.com/FreeSynergy/fs-document"
+version = "0.0.1"
 rust-version = "1.89"
+# repository = "..."   # set after the repository exists

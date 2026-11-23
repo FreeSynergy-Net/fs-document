@@ -1,17 +1,21 @@
 [package]
 name = "fs-site"
-description = "FreeSynergy site builder: a folder of text and user files in, a static website folder out (several sites per domain, byte-exact pass-through, deterministic)"
+description = "Static site builder: a folder of text and user files in, a website folder out (several sites per domain, byte-exact pass-through, deterministic). Built with help from Claude (AI)"
+readme = "README.md"
 edition.workspace = true
 license.workspace = true
 version.workspace = true
+rust-version.workspace = true
+# repository.workspace = true  # set after the repository exists
+
 
 [[bin]]
 name = "fs-site"
 path = "src/main.rs"
 
 [dependencies]
-fs-document = { path = "../fs-document" }
-fs-document-html = { path = "../fs-document-html" }
+fs-document = { path = "../fs-document", version = "0.0.1" }
+fs-document-html = { path = "../fs-document-html", version = "0.0.1" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 sha2 = "0.10"
