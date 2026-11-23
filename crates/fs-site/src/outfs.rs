@@ -185,6 +185,7 @@ fn set_mode(p: &Path, dir: bool) -> std::io::Result<()> {
 }
 
 #[cfg(not(unix))]
+#[allow(clippy::unnecessary_wraps)] // same signature as the Unix variant
 fn set_mode(_: &Path, _: bool) -> std::io::Result<()> {
     Ok(())
 }

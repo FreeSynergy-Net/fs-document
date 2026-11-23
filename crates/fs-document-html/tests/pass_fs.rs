@@ -1,4 +1,9 @@
 //! Pass-through on the file system: byte equality, links, pipes, escapes, limits.
+//!
+//! Unix only: the pass-through opens files with `O_NOFOLLOW` and inode checks (`pass::fsx`),
+//! which have no safe Windows counterpart yet; there `copy_file` refuses everything (see
+//! `pass_unsupported.rs`). Symlinks, `mkfifo` and hard-link counts below are Unix facts too.
+#![cfg(unix)]
 use fs_document_html::pass::{copy_file, Limits, PassError, PassPath};
 use sha2::{Digest, Sha256};
 use std::fs;
