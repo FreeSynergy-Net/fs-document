@@ -1,0 +1,2 @@
+# Fixtures and golden files are byte-exact tests: never convert line endings on checkout (Windows).
+* text=auto eol=lf
