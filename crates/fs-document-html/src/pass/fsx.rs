@@ -197,8 +197,9 @@ pub fn open_plain(root: &Path, rel: &PassPath) -> Result<File, PassError> {
         let next = dir
             .open_dir_nofollow(seg)
             .map_err(|e| why(&dir, seg, false, e))?;
-        // Backstop on the HANDLE: `cap-std` already refused links and junctions; this catches the
-        // remaining (not name-replacing) reparse points.
+        // Defence in depth: `cap-std` already refused links and junctions, so no test reaches
+        // this check (`no-handle-reparse` survives, see BERICHT-doc-r4). It is for the other
+        // reparse points (cloud placeholder, dedup, `AF_UNIX`), which cap-std opens as themselves.
         if next.dir_metadata()?.file_attributes() & REPARSE != 0 {
             return Err(link());
         }
@@ -211,7 +212,7 @@ pub fn open_plain(root: &Path, rel: &PassPath) -> Result<File, PassError> {
             OpenOptions::new().read(true).follow(FollowSymlinks::No),
         )
         .map_err(|e| why(&dir, last, true, e))?;
-    // Look at the open handle, not at the path again.
+    // Look at the open handle, not at the path again (REPARSE: defence in depth, see above).
     let m = f.metadata()?;
     if m.file_attributes() & REPARSE != 0 {
         return Err(link());
