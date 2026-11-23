@@ -6,9 +6,9 @@
 
 use crate::config::Lang;
 use crate::source::FileEntry;
+use fs_document::{LinkStyle, LinkValue};
 use fs_document_html::pass::MediaType;
 use fs_document_html::{LinkResolver, LinkTarget, MediaResolver, MediaTarget};
-use fs_document::{LinkStyle, LinkValue};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 

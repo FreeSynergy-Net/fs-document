@@ -1,9 +1,9 @@
 //! Raw HTML, link schemes and injection: what must never reach the output.
 mod common;
 use common::{html, page};
+use fs_document::{import_markdown, Document, Exporter};
 use fs_document_html::url::{is_relative, safe_link};
 use fs_document_html::{HtmlExporterBuilder, Problem, RawHtmlPolicy};
-use fs_document::{import_markdown, Document, Exporter};
 use proptest::prelude::*;
 
 #[test]

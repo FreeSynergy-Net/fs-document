@@ -2,8 +2,8 @@
 //! cut raw HTML by bytes and panicked on `<div>ä</div>`), also in the exporter and as proptest.
 mod common;
 use common::{html, page};
-use fs_document_html::HtmlExporter;
 use fs_document::{import_markdown, Exporter};
+use fs_document_html::HtmlExporter;
 use proptest::prelude::*;
 
 const SAMPLES: &[&str] = &[

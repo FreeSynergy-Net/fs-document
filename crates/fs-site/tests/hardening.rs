@@ -2,9 +2,7 @@
 mod common;
 use common::*;
 use fs_document_html::pass::PassError;
-use fs_site::{
-    build, FileEntry, FolderSource, Host, Listing, PageEntry, SiteConfig, SiteSource,
-};
+use fs_site::{build, FileEntry, FolderSource, Host, Listing, PageEntry, SiteConfig, SiteSource};
 use std::cell::Cell;
 use std::io::{Cursor, Read};
 

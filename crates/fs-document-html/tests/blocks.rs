@@ -1,8 +1,8 @@
 //! Blocks, containers and marks of the HTML exporter.
 mod common;
 use common::{html, page};
-use fs_document_html::{HtmlExporter, Problem};
 use fs_document::{import_markdown, Exporter};
+use fs_document_html::{HtmlExporter, Problem};
 
 #[test]
 fn paragraph_heading_rule_and_escape() {

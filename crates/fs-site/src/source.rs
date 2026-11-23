@@ -6,8 +6,8 @@
 //! *entries*, and the bytes only through [`SiteSource::open`].
 
 use crate::config::{Lang, SiteConfig};
-use fs_document_html::pass::{PassError, PassPath};
 use fs_document::Document;
+use fs_document_html::pass::{PassError, PassPath};
 use std::io::Read;
 
 /// A page in one language.

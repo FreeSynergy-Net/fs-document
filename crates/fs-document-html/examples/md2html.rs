@@ -1,8 +1,8 @@
 //! Example: print the HTML fragment of the Markdown file given as argument.
 //!
 //! Pattern: Facade usage — only the crate root API.
-use fs_document_html::HtmlExporter;
 use fs_document::{import_markdown, Exporter};
+use fs_document_html::HtmlExporter;
 
 fn main() {
     let path = std::env::args().nth(1).expect("a Markdown file");
