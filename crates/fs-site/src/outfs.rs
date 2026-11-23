@@ -175,11 +175,22 @@ impl Out {
     }
 }
 
-/// Set the modification time of a file or folder. `std::fs::set_times` opens a folder the way
-/// Windows needs (backup semantics); `File::open` of a folder or a read-only open of a file is
-/// refused there.
+/// Set the modification time of a file or folder (the rust-version is 1.89, so not `fs::set_times`).
+/// Windows refuses a read-only handle for this, and a folder needs backup semantics.
 pub(crate) fn set_mtime(path: &Path, mtime: SystemTime) -> std::io::Result<()> {
-    fs::set_times(path, fs::FileTimes::new().set_modified(mtime))
+    #[cfg(windows)]
+    let f = {
+        use std::os::windows::fs::OpenOptionsExt;
+        /// `FILE_FLAG_BACKUP_SEMANTICS`: lets a folder be opened.
+        const BACKUP_SEMANTICS: u32 = 0x0200_0000;
+        OpenOptions::new()
+            .write(true)
+            .custom_flags(BACKUP_SEMANTICS)
+            .open(path)?
+    };
+    #[cfg(not(windows))]
+    let f = fs::File::open(path)?;
+    f.set_modified(mtime)
 }
 
 #[cfg(unix)]
