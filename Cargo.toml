@@ -1,0 +1,11 @@
+[workspace]
+resolver = "2"
+members = ["crates/fs-texts", "crates/fs-text-html", "crates/fs-text-site"]
+
+[workspace.package]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+version = "0.0.13"
+authors = ["FreeSynergy <support@freesynergy.net>"]
+repository = "https://github.com/FreeSynergy/fs-texts"
+rust-version = "1.89"

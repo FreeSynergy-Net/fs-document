@@ -1,0 +1,119 @@
+//! Event dispatch: routes each parser event to the handler of its concern.
+//!
+//! Pattern: Visitor-style dispatch — one `match` per event kind, one handler module per
+//! concern (block, container, table, front matter, link, inline).
+
+use super::hints::table_dashes;
+use super::state::Imp;
+use crate::doc::BlockKind;
+use pulldown_cmark::{Event, Tag, TagEnd};
+use std::ops::Range;
+
+impl Imp<'_> {
+    pub(super) fn event(&mut self, idx: usize, ev: &Event, range: &Range<usize>) {
+        self.extend_leaf(ev, range);
+        match ev {
+            Event::Start(tag) => self.start(idx, tag, range),
+            Event::End(end) => self.end(*end, range),
+            Event::Text(t) | Event::InlineMath(t) | Event::DisplayMath(t) => self.text(t),
+            Event::Code(c) => self.code(c),
+            Event::Html(h) | Event::InlineHtml(h) => self.html(h),
+            Event::FootnoteReference(label) => self.footnote_ref(label),
+            Event::SoftBreak => self.text("\n"),
+            Event::HardBreak => self.hard_break(),
+            Event::Rule => self.rule(range),
+            Event::TaskListMarker(done) => self.task_marker(*done),
+        }
+        self.stamp_leaf(range);
+    }
+
+    /// Events that belong to the open leaf stretch its source range (container and new-leaf
+    /// events do not: they end or replace it).
+    fn extend_leaf(&mut self, ev: &Event, range: &Range<usize>) {
+        let own = !matches!(
+            ev,
+            Event::Start(
+                Tag::Paragraph
+                    | Tag::Heading { .. }
+                    | Tag::CodeBlock(_)
+                    | Tag::HtmlBlock
+                    | Tag::Table(_)
+                    | Tag::MetadataBlock(_)
+                    | Tag::BlockQuote(_)
+                    | Tag::List(_)
+                    | Tag::Item
+                    | Tag::FootnoteDefinition(_)
+            ) | Event::End(
+                TagEnd::BlockQuote(_) | TagEnd::List(_) | TagEnd::Item | TagEnd::FootnoteDefinition
+            )
+        );
+        if let Some(l) = self.leaf.as_mut().filter(|_| own) {
+            l.end = l.end.max(range.end);
+        }
+    }
+
+    /// The first event inside a leaf fixes its source start, table dash hints.
+    fn stamp_leaf(&mut self, range: &Range<usize>) {
+        let src = self.src;
+        if let Some(l) = self.leaf.as_mut() {
+            if l.start.is_none() {
+                l.start = Some(range.start);
+                l.end = l.end.max(range.end);
+                if let BlockKind::Code { info } = &l.kind {
+                    let t = src[range.start..].trim_start();
+                    let fence = t.chars().next().filter(|c| matches!(c, '`' | '~'));
+                    let after = fence.map_or("", |c| t.trim_start_matches(c));
+                    let spaced = after.starts_with(' ') && !info.is_empty();
+                    l.fence = fence
+                        .filter(|c| *c == '~' || spaced)
+                        .map(|c| format!("{c}{}", if spaced { " " } else { "" }));
+                }
+                if let BlockKind::Table { .. } = l.kind {
+                    l.dashes = table_dashes(&src[range.clone()]);
+                }
+            }
+        }
+    }
+
+    fn start(&mut self, idx: usize, tag: &Tag, range: &Range<usize>) {
+        match tag {
+            Tag::Paragraph | Tag::Heading { .. } | Tag::CodeBlock(_) | Tag::HtmlBlock => {
+                self.start_leaf_block(tag);
+            }
+            Tag::BlockQuote(_) | Tag::List(_) | Tag::Item | Tag::FootnoteDefinition(_) => {
+                self.start_container(idx, tag, range);
+            }
+            Tag::Table(_) | Tag::TableHead | Tag::TableRow | Tag::TableCell => {
+                self.start_table(tag);
+            }
+            Tag::MetadataBlock(k) => self.start_front_matter(*k),
+            Tag::Emphasis | Tag::Strong | Tag::Strikethrough => self.start_span(tag, range),
+            Tag::Link { .. } | Tag::Image { .. } => self.start_link(tag),
+            _ => {}
+        }
+    }
+
+    fn end(&mut self, end: TagEnd, range: &Range<usize>) {
+        match end {
+            TagEnd::Paragraph
+            | TagEnd::Heading(_)
+            | TagEnd::HtmlBlock
+            | TagEnd::MetadataBlock(_)
+            | TagEnd::CodeBlock
+            | TagEnd::Table => self.flush(),
+            TagEnd::BlockQuote(_) | TagEnd::List(_) | TagEnd::Item | TagEnd::FootnoteDefinition => {
+                self.end_container(end);
+            }
+            TagEnd::TableCell => self.cell_end = range.end,
+            TagEnd::TableHead | TagEnd::TableRow => {
+                self.end_row(matches!(end, TagEnd::TableHead), range);
+            }
+            TagEnd::Emphasis
+            | TagEnd::Strong
+            | TagEnd::Strikethrough
+            | TagEnd::Link
+            | TagEnd::Image => self.close(),
+            _ => {}
+        }
+    }
+}

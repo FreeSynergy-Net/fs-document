@@ -1,0 +1,59 @@
+# site.toml - template with every key. Copy it next to content/ and files/, then edit.
+# Folder layout:
+#   site.toml
+#   content/<lang>/index.md, content/<lang>/<folder>/<page>.md   (the pages)
+#   files/                                                         (published as they are)
+schema = 2                 # 2 is needed for [site], [build], [look], [[menu]], [folder_titles]
+purpose = "website"        # always "website"
+
+[site]
+id = "example"             # short name: a-z 0-9 -; names the output folder
+name = "Example"           # shown in the header of every page (optional, default: id)
+path_prefix = "/"          # where on the host the site lives ("/" or e.g. "/docs")
+languages = ["en", "de"]   # folder names below content/; the first is the default
+default_language = "en"    # optional
+
+[names]
+primary = "example.org"    # the host used in canonical addresses and the sitemap
+# aliases = ["www.example.org"]
+
+[dns]
+records = ["A", "AAAA"]    # wanted record types: A, AAAA, CAA (optional)
+
+[acme]
+method = "http-01"         # the only method for now
+
+[csp]
+mode = "static"            # "static": no script anywhere; "passthrough": files may bring script
+# policy = "default-src 'self'"           # replaces the preset policy (optional)
+# [[csp.area]]                            # a rule for one folder (optional, up to 8)
+# path = "/apps"
+# mode = "passthrough"
+
+[build]
+dead_links = "error"       # "error" stops the build on a dead link; "list" only reports them
+folder_index = true        # generate an overview page for a folder without index.md
+
+[look]
+style = "files/site.css"   # your own style sheet, linked after the fixed one (must lie in files/)
+footer = "Example Association - Imprint: see menu"   # plain text, one line, shown escaped
+
+# The main menu. Without any [[menu]] the navigation shows the page tree (as before).
+# target: a page of the site ("a/b", "/" for the start page) or a complete https address.
+# A page that does not exist is an error at build time, never a dead link.
+[[menu]]
+label = "Home"
+target = "/"
+
+[[menu]]
+label = "Contact"
+target = "info/contact"
+
+[[menu]]
+label = "Source code"
+target = "https://example.org/source"
+
+# Title of a folder that has no index.md (folder = key, as a/b). A folder with an index.md
+# is named after the title of that page. Without an entry the folder name is shown.
+[folder_titles]
+info = "Information"

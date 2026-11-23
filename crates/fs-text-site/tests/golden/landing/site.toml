@@ -1,0 +1,22 @@
+schema = 2
+purpose = "website"
+
+[site]
+id = "landing"
+name = "Example Landing"
+path_prefix = "/"
+languages = ["de", "en"]
+default_language = "de"
+
+[names]
+primary = "example.test"
+aliases = ["www.example.test"]
+
+[dns]
+records = ["A", "AAAA", "CAA"]
+
+[acme]
+method = "http-01"
+
+[csp]
+mode = "passthrough"
