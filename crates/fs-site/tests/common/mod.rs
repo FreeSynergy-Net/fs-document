@@ -16,9 +16,19 @@ pub fn opts() -> BuildOptions {
     BuildOptions::new(UNIX_EPOCH + Duration::from_secs(1_700_000_000))
 }
 
+/// Permission bits (Unix only; Windows has none, 0 there).
+#[cfg(unix)]
+pub fn mode_of(m: &fs::Metadata) -> u32 {
+    use std::os::unix::fs::PermissionsExt;
+    m.permissions().mode() & 0o777
+}
+#[cfg(not(unix))]
+pub fn mode_of(_: &fs::Metadata) -> u32 {
+    0
+}
+
 /// path -> (bytes, mtime secs, mode) of a whole folder.
 pub fn snapshot(root: &Path) -> BTreeMap<String, (Vec<u8>, u64, u32)> {
-    use std::os::unix::fs::PermissionsExt;
     fn walk(root: &Path, dir: &Path, out: &mut BTreeMap<String, (Vec<u8>, u64, u32)>) {
         for e in fs::read_dir(dir).unwrap() {
             let p = e.unwrap().path();
@@ -30,7 +40,7 @@ pub fn snapshot(root: &Path) -> BTreeMap<String, (Vec<u8>, u64, u32)> {
                 .duration_since(UNIX_EPOCH)
                 .unwrap()
                 .as_secs();
-            let mode = m.permissions().mode() & 0o777;
+            let mode = mode_of(&m);
             if m.is_dir() {
                 out.insert(format!("{rel}/"), (Vec::new(), t, mode));
                 walk(root, &p, out);

@@ -184,6 +184,7 @@ fn legacy_schema_1_site_builds_with_defaults() {
     );
 }
 
+#[cfg(unix)]
 #[test]
 fn the_outer_output_folder_has_the_release_time_too() {
     use std::os::unix::fs::MetadataExt;

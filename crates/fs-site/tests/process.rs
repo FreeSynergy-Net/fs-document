@@ -20,8 +20,18 @@ fn run(out: &Path, mtime: &str) {
     assert!(o.status.success(), "{}", String::from_utf8_lossy(&o.stderr));
 }
 
-fn tree(root: &Path) -> BTreeMap<String, (Vec<u8>, u64, u32)> {
+/// Permission bits (Unix only; Windows has none, 0 there).
+#[cfg(unix)]
+fn mode_of(m: &fs::Metadata) -> u32 {
     use std::os::unix::fs::PermissionsExt;
+    m.permissions().mode() & 0o777
+}
+#[cfg(not(unix))]
+fn mode_of(_: &fs::Metadata) -> u32 {
+    0
+}
+
+fn tree(root: &Path) -> BTreeMap<String, (Vec<u8>, u64, u32)> {
     #[allow(clippy::many_single_char_names)]
     fn walk(root: &Path, d: &Path, o: &mut BTreeMap<String, (Vec<u8>, u64, u32)>) {
         for e in fs::read_dir(d).unwrap() {
@@ -34,7 +44,7 @@ fn tree(root: &Path) -> BTreeMap<String, (Vec<u8>, u64, u32)> {
                 .unwrap()
                 .as_secs();
             let rel = p.strip_prefix(root).unwrap().to_string_lossy().to_string();
-            let mode = m.permissions().mode() & 0o777;
+            let mode = mode_of(&m);
             if m.is_dir() {
                 o.insert(format!("{rel}/"), (vec![], t, mode));
                 walk(root, &p, o);

@@ -78,6 +78,7 @@ fn well_known_allows_only_security_txt() {
     assert!(builds(&t));
 }
 
+#[cfg(unix)]
 #[test]
 fn a_symlink_and_a_hard_link_are_refused() {
     use std::os::unix::fs::symlink;

@@ -9,6 +9,7 @@ use fs_site::{
 use std::cell::Cell;
 use std::fs;
 use std::io::{Cursor, Read};
+#[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 
@@ -108,6 +109,7 @@ fn a_media_file_that_changes_between_check_and_copy_stops_the_build() {
 
 // ---- unreadable folders -----------------------------------------------------------------
 
+#[cfg(unix)]
 #[test]
 fn an_unreadable_folder_is_reported_and_stops_the_build() {
     for (rel, kind) in [("content/en/sub", "content"), ("files/sub", "files")] {
@@ -129,6 +131,7 @@ fn an_unreadable_folder_is_reported_and_stops_the_build() {
     }
 }
 
+#[cfg(unix)]
 #[test]
 fn an_entry_that_cannot_be_inspected_is_reported_not_skipped() {
     let t = scratch(false);

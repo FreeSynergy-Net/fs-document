@@ -86,6 +86,7 @@ fn a_style_file_that_is_not_there_stops_the_build() {
     assert!(refused(&t).contains("look.style: files/none.css is not there"));
 }
 
+#[cfg(unix)]
 #[test]
 fn a_style_that_is_a_link_out_of_files_stops_the_build() {
     let t = scratch(true);
