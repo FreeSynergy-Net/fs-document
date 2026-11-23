@@ -7,4 +7,5 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 version = "0.0.1"
 rust-version = "1.89"
-# repository = "..."   # set after the repository exists
+repository = "https://github.com/FreeSynergy-Net/fs-document"
+homepage = "https://github.com/FreeSynergy-Net/fs-document"

@@ -9,6 +9,4 @@ permissions:
 
 jobs:
   check:
-    # TODO pin: the pattern (fs-jscalendar) uses @v0.0.15; the organisation FreeSynergy-Net/fs-release showed only the tag v0.0.9 on 2026-11-23.
-    # Before the first push check that this tag exists in the organisation that owns the repository.
-    uses: FreeSynergy-Net/fs-release/.github/workflows/check.yml@v0.0.15
+    uses: FreeSynergy-Net/fs-release/.github/workflows/check.yml@v0.0.17
