@@ -166,8 +166,10 @@ pub fn open_plain(root: &Path, rel: &PassPath) -> Result<File, PassError> {
 ///
 /// No own `unsafe`: the walk runs inside a `cap-std` directory handle. Nothing is followed: every
 /// part is opened with `open_dir_nofollow` / `FollowSymlinks::No` (`FILE_FLAG_OPEN_REPARSE_POINT`),
-/// so a part swapped for a link between a look and the open is opened as the link itself, and the
-/// check on the HANDLE sees it. The open through `NtCreateFile` with a root directory keeps the
+/// and there is no look before the open. `cap-std` itself looks at the opened handle and refuses a
+/// symbolic link or a junction (`ERROR_STOPPED_ON_SYMLINK`); our own check of the reparse attribute
+/// on the handle catches the other reparse points (cloud placeholder, dedup, `AF_UNIX`, app exec
+/// link) that `cap-std` opens as themselves. The open through `NtCreateFile` with a root directory keeps the
 /// system call below `root`; links that were followed would be resolved by `cap-std`, so none are.
 pub fn open_plain(root: &Path, rel: &PassPath) -> Result<File, PassError> {
     use cap_fs_ext::{DirExt as _, FollowSymlinks, MetadataExt as _, OpenOptionsFollowExt as _};
@@ -177,19 +179,26 @@ pub fn open_plain(root: &Path, rel: &PassPath) -> Result<File, PassError> {
     const REPARSE: u32 = 0x400;
     let link = || PassError::NotRegular("symbolic link or junction");
     // After a failed open: say what the part is (only on the error path, no decision rests on it).
-    let why = |dir: &Dir, seg: &str, e: std::io::Error| match dir.symlink_metadata(seg) {
-        Ok(m) if m.file_type().is_symlink() || m.file_attributes() & REPARSE != 0 => link(),
-        Ok(m) if !m.is_dir() => PassError::NotRegular("a part of the path is not a folder"),
-        _ => PassError::Io(e),
-    };
+    let why =
+        |dir: &Dir, seg: &str, is_last: bool, e: std::io::Error| match dir.symlink_metadata(seg) {
+            Ok(m) if m.file_type().is_symlink() || m.file_attributes() & REPARSE != 0 => link(),
+            // Only a middle part can be "not a folder"; for the last part keep the real cause.
+            Ok(m) if !is_last && !m.is_dir() => {
+                PassError::NotRegular("a part of the path is not a folder")
+            }
+            _ => PassError::Io(e),
+        };
     let mut dir = Dir::open_ambient_dir(root, ambient_authority())?;
     let n = rel.segments().count();
     for (i, seg) in rel.segments().enumerate() {
         if i + 1 == n {
             break;
         }
-        let next = dir.open_dir_nofollow(seg).map_err(|e| why(&dir, seg, e))?;
-        // The handle IS the part: a junction or link opened as itself shows the attribute here.
+        let next = dir
+            .open_dir_nofollow(seg)
+            .map_err(|e| why(&dir, seg, false, e))?;
+        // Backstop on the HANDLE: `cap-std` already refused links and junctions; this catches the
+        // remaining (not name-replacing) reparse points.
         if next.dir_metadata()?.file_attributes() & REPARSE != 0 {
             return Err(link());
         }
@@ -201,7 +210,7 @@ pub fn open_plain(root: &Path, rel: &PassPath) -> Result<File, PassError> {
             last,
             OpenOptions::new().read(true).follow(FollowSymlinks::No),
         )
-        .map_err(|e| why(&dir, last, e))?;
+        .map_err(|e| why(&dir, last, true, e))?;
     // Look at the open handle, not at the path again.
     let m = f.metadata()?;
     if m.file_attributes() & REPARSE != 0 {

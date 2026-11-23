@@ -146,3 +146,30 @@ fn a_drive_or_a_backslash_cannot_leave_the_folder() {
         assert!(copy(root.path(), dest.path(), &rel).is_err(), "{rel}");
     }
 }
+
+#[test]
+fn a_relative_file_link_inside_the_root_is_refused() {
+    // The attack of the review: a link whose target is RELATIVE and stays inside the root.
+    // `cap-std` rejects absolute targets while following, so only a relative one proves that
+    // nothing is followed at all.
+    let (root, _o, dest) = setup();
+    mklink(&[], &root.path().join("rel.txt"), Path::new("real.txt"));
+    refused(
+        &copy(root.path(), dest.path(), "rel.txt"),
+        "relative file link",
+        dest.path(),
+    );
+}
+
+#[test]
+fn a_relative_directory_link_inside_the_root_is_refused() {
+    let (root, _o, dest) = setup();
+    std::fs::create_dir(root.path().join("sub")).unwrap();
+    std::fs::write(root.path().join("sub").join("a.txt"), "a").unwrap();
+    mklink(&["/D"], &root.path().join("dirrel"), Path::new("sub"));
+    refused(
+        &copy(root.path(), dest.path(), "dirrel/a.txt"),
+        "relative directory link",
+        dest.path(),
+    );
+}
