@@ -100,7 +100,7 @@ pub(super) fn convert_marked(src: &str) -> (String, Vec<usize>) {
                         "{}> [!{}]{}",
                         base,
                         ty,
-                        fold.map(|c| c.to_string()).unwrap_or_default()
+                        fold.map_or_else(String::new, |c| c.to_string())
                     );
                     if !title.is_empty() {
                         hdr.push(' ');

@@ -35,7 +35,7 @@ impl MarkWriter for MdSyntax {
                 Some(l) => format!(
                     "]({}{})",
                     dest(&l.path),
-                    l.title.as_deref().map(title).unwrap_or_default()
+                    l.title.as_deref().map_or_else(String::new, title)
                 ),
                 None => "]()".into(),
             },
