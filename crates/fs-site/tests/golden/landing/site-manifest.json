@@ -1,0 +1,125 @@
+{
+  "dead_links": 1,
+  "files": [
+    {
+      "active": false,
+      "bytes": 38,
+      "kind": "passthrough",
+      "media": "text/plain",
+      "path": ".well-known/security.txt",
+      "sha256": "9413328279f172bdc4112b97dd67dba7cf4555b03b9aaac5d398176d9222f4f1"
+    },
+    {
+      "bytes": 921,
+      "kind": "generated",
+      "media": "text/html",
+      "path": "404.html",
+      "sha256": "6cccd7a23106cf738f2193cbd1d1124f72133ba0cdf4de31424d6f33b45ff8d8"
+    },
+    {
+      "bytes": 2500,
+      "kind": "generated",
+      "media": "text/css",
+      "path": "_fs/theme.7b54fa7963592359.css",
+      "sha256": "7b54fa796359235956a7d60adb2d7e77ad836b62f111aa695c062111e3aacc0a"
+    },
+    {
+      "active": true,
+      "bytes": 28,
+      "kind": "passthrough",
+      "media": "text/javascript",
+      "path": "app.js",
+      "sha256": "ec1c6752b927ce4ecd77054cbabedf8f46fbe91db5e3090f9861bcd20d93470c"
+    },
+    {
+      "active": false,
+      "bytes": 17,
+      "kind": "passthrough",
+      "media": "text/css",
+      "path": "css/site.css",
+      "sha256": "7091ab4775b4fa8b1b81b322dc3b0f86a1736e13cdeee8a3fad54ca43dce8025"
+    },
+    {
+      "bytes": 1263,
+      "kind": "page",
+      "media": "text/html",
+      "path": "de/about/index.html",
+      "sha256": "e41e1b52a82694724e37695da9226eda06a980194d0823838b4111375cd58bcd"
+    },
+    {
+      "bytes": 1581,
+      "kind": "page",
+      "media": "text/html",
+      "path": "de/index.html",
+      "sha256": "7de1e8c5b1c1ec46aa3e301b0e73d9dda670f82c996c26319442bbb0e0a90a08"
+    },
+    {
+      "bytes": 1548,
+      "kind": "page",
+      "media": "text/html",
+      "path": "de/inhalt/index.html",
+      "sha256": "cd7af653a5d4edc0a5451f444f23e215f80559c1009d48f58d424339761c275f"
+    },
+    {
+      "bytes": 1464,
+      "kind": "page",
+      "media": "text/html",
+      "path": "en/contents/index.html",
+      "sha256": "3492473dfa80cf35a83a5b6bf230ef8d0f8faa877a1492a49f9d5df0b8877988"
+    },
+    {
+      "bytes": 1462,
+      "kind": "page",
+      "media": "text/html",
+      "path": "en/index.html",
+      "sha256": "1174141daa8b094480d1be8605742c018c3af07c054af0f9b536b20c05ec6922"
+    },
+    {
+      "active": false,
+      "bytes": 70,
+      "kind": "passthrough",
+      "media": "image/png",
+      "path": "img/logo.png",
+      "sha256": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f"
+    },
+    {
+      "active": true,
+      "bytes": 187,
+      "kind": "passthrough",
+      "media": "text/html",
+      "path": "index.html",
+      "sha256": "21f54681f27c8512ed01f01971a1d2becfaa063769bafafcddae9ef6edcc9b9b"
+    },
+    {
+      "bytes": 66,
+      "kind": "generated",
+      "media": "text/plain",
+      "path": "robots.txt",
+      "sha256": "f51a8e141eed65dc695fb8824827cd150dcc08a7272aa7c6cbc608995b1b4f96"
+    },
+    {
+      "bytes": 304,
+      "kind": "generated",
+      "media": "text/x-toml",
+      "path": "site.toml",
+      "sha256": "e5805111160f8227f37f957528224d9d4aa2facdeb408f32221556ccf2d68c0a"
+    },
+    {
+      "bytes": 1542,
+      "kind": "generated",
+      "media": "text/xml",
+      "path": "sitemap.xml",
+      "sha256": "b5f024be0ac1aee0ac6f791b993fc500caf5a414145743e955fc0fe4ed9cc099"
+    }
+  ],
+  "host": "example.test",
+  "languages": [
+    "de",
+    "en"
+  ],
+  "manifest": 1,
+  "path_prefix": "",
+  "site": "landing",
+  "source_revision": null,
+  "tool": "fs-site 0.0.13"
+}

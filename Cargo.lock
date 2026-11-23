@@ -1737,10 +1737,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "fs-text-html"
+name = "fs-document-html"
 version = "0.0.13"
 dependencies = [
- "fs-texts",
+ "fs-document",
  "libc",
  "proptest",
  "pulldown-cmark 0.13.6",
@@ -1749,11 +1749,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "fs-text-site"
+name = "fs-site"
 version = "0.0.13"
 dependencies = [
- "fs-text-html",
- "fs-texts",
+ "fs-document-html",
+ "fs-document",
  "mime_guess",
  "serde",
  "serde_json",
@@ -1763,7 +1763,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "fs-texts"
+name = "fs-document"
 version = "0.0.13"
 dependencies = [
  "proptest",
@@ -1778,7 +1778,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "fs-texts-app"
+name = "fs-document-app"
 version = "0.0.13"
 dependencies = [
  "async-trait",
@@ -1798,10 +1798,10 @@ dependencies = [
  "fs-components-workbenches",
  "fs-interfaces 0.0.1 (git+https://github.com/FreeSynergy/fs-interfaces?tag=v0.0.19)",
  "fs-objects",
- "fs-texts",
- "fs-texts-client",
+ "fs-document",
+ "fs-document-client",
  "fs-texts-core",
- "fs-texts-testserver",
+ "fs-document-testserver",
  "fs-types",
  "futures",
  "png 0.18.1",
@@ -1815,16 +1815,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "fs-texts-bin"
+name = "fs-document-bin"
 version = "0.0.13"
 dependencies = [
- "fs-texts-app",
- "fs-texts-server",
+ "fs-document-app",
+ "fs-document-server",
  "png 0.18.1",
 ]
 
 [[package]]
-name = "fs-texts-client"
+name = "fs-document-client"
 version = "0.0.13"
 dependencies = [
  "async-trait",
@@ -1832,10 +1832,10 @@ dependencies = [
  "capnp-rpc",
  "fs-interfaces 0.0.1 (git+https://github.com/FreeSynergy/fs-interfaces?tag=v0.0.19)",
  "fs-objects",
- "fs-texts",
+ "fs-document",
  "fs-texts-core",
- "fs-texts-server",
- "fs-texts-testserver",
+ "fs-document-server",
+ "fs-document-testserver",
  "fs-types",
  "futures",
  "serde_json",
@@ -1851,7 +1851,7 @@ dependencies = [
  "chrono",
  "fs-interfaces 0.0.1 (git+https://github.com/FreeSynergy/fs-interfaces?tag=v0.0.19)",
  "fs-objects",
- "fs-texts",
+ "fs-document",
  "fs-types",
  "serde",
  "serde_json",
@@ -1863,7 +1863,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "fs-texts-server"
+name = "fs-document-server"
 version = "0.0.13"
 dependencies = [
  "async-trait",
@@ -1873,7 +1873,7 @@ dependencies = [
  "fs-objects",
  "fs-registry",
  "fs-registry-client",
- "fs-texts",
+ "fs-document",
  "fs-texts-core",
  "fs-types",
  "serde_json",
@@ -1883,13 +1883,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "fs-texts-testserver"
+name = "fs-document-testserver"
 version = "0.0.13"
 dependencies = [
  "fs-interfaces 0.0.1 (git+https://github.com/FreeSynergy/fs-interfaces?tag=v0.0.19)",
  "fs-objects",
  "fs-texts-core",
- "fs-texts-server",
+ "fs-document-server",
  "tempfile",
  "tokio",
 ]

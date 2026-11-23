@@ -1,0 +1,127 @@
+{
+  "dead_links": 0,
+  "files": [
+    {
+      "bytes": 928,
+      "kind": "generated",
+      "media": "text/html",
+      "path": "404.html",
+      "sha256": "9e390259f64a835a94dce67e36459479d67f7be00bbee60159ba0617dc62ee0f"
+    },
+    {
+      "bytes": 70,
+      "kind": "media",
+      "media": "image/png",
+      "path": "_fs/media/abc58d5127d7cdf3.png",
+      "sha256": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f"
+    },
+    {
+      "bytes": 2500,
+      "kind": "generated",
+      "media": "text/css",
+      "path": "_fs/theme.7b54fa7963592359.css",
+      "sha256": "7b54fa796359235956a7d60adb2d7e77ad836b62f111aa695c062111e3aacc0a"
+    },
+    {
+      "bytes": 1496,
+      "kind": "page",
+      "media": "text/html",
+      "path": "de/guide/10-last/index.html",
+      "sha256": "6f2243f0aa31bd426f57c145b7068891fc4f659f25fbb29a1efd08720996355e"
+    },
+    {
+      "bytes": 1498,
+      "kind": "page",
+      "media": "text/html",
+      "path": "de/guide/2-second/index.html",
+      "sha256": "e808aa36341838ed348553e74c13b79a17f605ad21b015a5d1809131327390e0"
+    },
+    {
+      "bytes": 1830,
+      "kind": "page",
+      "media": "text/html",
+      "path": "de/guide/index.html",
+      "sha256": "5d30f8d7c2fbd8b43ecbea6f60a2c0144c58263ec9ebe6bb1c65654b4fb9f3e1"
+    },
+    {
+      "bytes": 1674,
+      "kind": "page",
+      "media": "text/html",
+      "path": "de/guide/install/index.html",
+      "sha256": "a8d07eebcb368011271a1bc06e1d9a1a40911b669262991bedb03f1a3544b29b"
+    },
+    {
+      "bytes": 1665,
+      "kind": "page",
+      "media": "text/html",
+      "path": "de/index.html",
+      "sha256": "ba562e1318f4402cc0a1a2272f0b09991bb9fc75dc0833ae490748f7ca9e8218"
+    },
+    {
+      "bytes": 1772,
+      "kind": "page",
+      "media": "text/html",
+      "path": "de/inhalt/index.html",
+      "sha256": "37eb1bcb6e676783bbec8beee8f34cd9d6424c7ebd51c6b1563c491e56a60792"
+    },
+    {
+      "bytes": 1669,
+      "kind": "page",
+      "media": "text/html",
+      "path": "en/contents/index.html",
+      "sha256": "72cc4b557072141ef5166f092c140b1f458c354adc4c6ca3894e815df403895c"
+    },
+    {
+      "bytes": 1707,
+      "kind": "page",
+      "media": "text/html",
+      "path": "en/guide/index.html",
+      "sha256": "8ac25a2efae590b25b4f65a0193eb181312fa4872d1a4371f4d212b72047b472"
+    },
+    {
+      "bytes": 1433,
+      "kind": "page",
+      "media": "text/html",
+      "path": "en/guide/only-en/index.html",
+      "sha256": "36cac8e6be19f5fa6e8674ce2e4fda1a1d96e37d7f787e7dfc09d1bd11619207"
+    },
+    {
+      "bytes": 1479,
+      "kind": "page",
+      "media": "text/html",
+      "path": "en/index.html",
+      "sha256": "7945ed62982c543992ba034c1ba31097cb9b731206f45e5e1ac54d957fd2a990"
+    },
+    {
+      "bytes": 983,
+      "kind": "generated",
+      "media": "text/html",
+      "path": "index.html",
+      "sha256": "736ba2a3208f6a7f8324c2120655e8a479bee8bafa5c1978d42d634ecc9a6a27"
+    },
+    {
+      "bytes": 259,
+      "kind": "generated",
+      "media": "text/x-toml",
+      "path": "site.toml",
+      "sha256": "f37eb6996dd23b8aace28a69944b79f5baeea4c8c179b594aba19376f1b66a3e"
+    },
+    {
+      "bytes": 3037,
+      "kind": "generated",
+      "media": "text/xml",
+      "path": "sitemap.xml",
+      "sha256": "9fb2079150efdb0ee4d013b13c3839c6191f921141095ec536bb2871c16f1fa3"
+    }
+  ],
+  "host": "example.test",
+  "languages": [
+    "de",
+    "en"
+  ],
+  "manifest": 1,
+  "path_prefix": "/wiki",
+  "site": "wiki",
+  "source_revision": null,
+  "tool": "fs-site 0.0.13"
+}
