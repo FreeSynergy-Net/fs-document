@@ -32,7 +32,11 @@ pub fn snapshot(root: &Path) -> BTreeMap<String, (Vec<u8>, u64, u32)> {
     fn walk(root: &Path, dir: &Path, out: &mut BTreeMap<String, (Vec<u8>, u64, u32)>) {
         for e in fs::read_dir(dir).unwrap() {
             let p = e.unwrap().path();
-            let rel = p.strip_prefix(root).unwrap().to_string_lossy().to_string();
+            let rel = p
+                .strip_prefix(root)
+                .unwrap()
+                .to_string_lossy()
+                .replace('\\', "/");
             let m = fs::symlink_metadata(&p).unwrap();
             let t = m
                 .modified()

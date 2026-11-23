@@ -175,10 +175,11 @@ impl Out {
     }
 }
 
-/// Set the modification time of a file or folder. `filetime` opens a folder the way Windows needs
-/// (backup semantics); `File::open` of a folder or a read-only open of a file is refused there.
+/// Set the modification time of a file or folder. `std::fs::set_times` opens a folder the way
+/// Windows needs (backup semantics); `File::open` of a folder or a read-only open of a file is
+/// refused there.
 pub(crate) fn set_mtime(path: &Path, mtime: SystemTime) -> std::io::Result<()> {
-    filetime::set_file_mtime(path, filetime::FileTime::from_system_time(mtime))
+    fs::set_times(path, fs::FileTimes::new().set_modified(mtime))
 }
 
 #[cfg(unix)]

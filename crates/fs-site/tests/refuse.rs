@@ -47,12 +47,19 @@ fn pass_files_may_not_use_generated_names() {
     }
 }
 
+// Unix only: two files that differ only in letter case cannot exist on a Windows folder (the
+// file system itself has one name for both), so there is nothing to refuse there.
+#[cfg(unix)]
 #[test]
-fn letter_case_twins_and_bad_paths_are_refused() {
+fn letter_case_twins_are_refused() {
     let t = scratch(false);
     put(&t, "files/a.css", b"a{}");
     put(&t, "files/A.css", b"a{}");
     assert!(refused(&t).contains("twice"));
+}
+
+#[test]
+fn bad_paths_are_refused() {
     let t = scratch(false);
     put(&t, "files/sp ace.css", b"a{}");
     assert!(refused(&t).contains("not allowed in a path"));
