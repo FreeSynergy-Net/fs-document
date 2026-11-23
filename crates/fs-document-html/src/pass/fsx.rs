@@ -160,8 +160,50 @@ pub fn open_plain(root: &Path, rel: &PassPath) -> Result<File, PassError> {
     Ok(f)
 }
 
-#[cfg(not(unix))]
-/// Only supported on Unix.
+#[cfg(windows)]
+/// Open `root/rel` for reading if it is a plain file reached without a link on the way and with
+/// one name only.
+///
+/// No own `unsafe`: the walk runs inside a `cap-std` directory handle (the system call stays
+/// below `root`, also for `..`, drive letters and links), each part is looked at without following
+/// it, and the open file is checked on its handle.
+pub fn open_plain(root: &Path, rel: &PassPath) -> Result<File, PassError> {
+    use cap_fs_ext::MetadataExt as _;
+    use cap_std::ambient_authority;
+    use cap_std::fs::{Dir, MetadataExt as _};
+    /// `FILE_ATTRIBUTE_REPARSE_POINT`: symbolic link, junction, or any other reparse point.
+    const REPARSE: u32 = 0x400;
+    let mut dir = Dir::open_ambient_dir(root, ambient_authority())?;
+    let n = rel.segments().count();
+    for (i, seg) in rel.segments().enumerate() {
+        let m = dir.symlink_metadata(seg)?;
+        // `is_symlink` is true for a symbolic link and a junction (mount point); the attribute
+        // catches every other reparse point.
+        if m.file_type().is_symlink() || m.file_attributes() & REPARSE != 0 {
+            return Err(PassError::NotRegular("symbolic link or junction"));
+        }
+        if i + 1 < n {
+            if !m.is_dir() {
+                return Err(PassError::NotRegular("a part of the path is not a folder"));
+            }
+            dir = dir.open_dir(seg)?;
+        }
+    }
+    let last = rel.segments().last().ok_or(PassError::EmptyPath)?;
+    let f = dir.open(last)?;
+    // Look at the open handle, not at the path again.
+    let m = f.metadata()?;
+    if !m.is_file() || m.file_attributes() & REPARSE != 0 {
+        return Err(PassError::NotRegular("not a regular file"));
+    }
+    if m.nlink() != 1 {
+        return Err(PassError::NotRegular("more than one name (hard link)"));
+    }
+    Ok(f.into_std())
+}
+
+#[cfg(not(any(unix, windows)))]
+/// Only supported on Unix and Windows.
 pub fn open_plain(_: &Path, _: &PassPath) -> Result<File, PassError> {
-    Err(PassError::NotRegular("only supported on Unix"))
+    Err(PassError::NotRegular("only supported on Unix and Windows"))
 }

@@ -14,6 +14,11 @@ homepage.workspace = true
 fs-document = { path = "../fs-document", version = "0.0.1" }
 sha2 = "0.10"
 
+[target.'cfg(windows)'.dependencies]
+# Open a file below a folder handle, the system call cannot leave the folder (Windows; Unix has O_NOFOLLOW below).
+cap-std = "3"
+cap-fs-ext = "3"
+
 [target.'cfg(unix)'.dependencies]
 libc = "0.2"
 

@@ -1,13 +1,11 @@
 //! Pass-through on the file system: byte equality, links, pipes, escapes, limits.
 //!
-//! Unix only: the pass-through opens files with `O_NOFOLLOW` and inode checks (`pass::fsx`),
-//! which have no safe Windows counterpart yet; there `copy_file` refuses everything (see
-//! `pass_unsupported.rs`). Symlinks, `mkfifo` and hard-link counts below are Unix facts too.
-#![cfg(unix)]
+//! Runs on Unix and Windows. Unix opens with `O_NOFOLLOW` and inode checks; Windows walks inside a
+//! `cap-std` folder handle and checks reparse points and the link count on the open handle
+//! (`pass::fsx`). Only what is a Unix fact stays Unix only: `symlink`, `mkfifo`.
 use fs_document_html::pass::{copy_file, Limits, PassError, PassPath};
 use sha2::{Digest, Sha256};
 use std::fs;
-use std::os::unix::fs::symlink;
 use std::path::Path;
 
 const PNG: &[u8] = b"\x89PNG\r\n\x1a\n\0\0\0\rIHDR";
@@ -91,8 +89,10 @@ fn size_limit_is_enforced() {
     .is_ok());
 }
 
+#[cfg(unix)]
 #[test]
 fn links_in_the_source_are_refused() {
+    use std::os::unix::fs::symlink;
     let (root, dest) = setup();
     let outside = tempfile::tempdir().unwrap();
     fs::write(outside.path().join("secret.txt"), "secret").unwrap();
@@ -112,29 +112,41 @@ fn links_in_the_source_are_refused() {
 }
 
 #[test]
-fn hard_links_pipes_and_folders_are_refused() {
+fn hard_links_and_folders_are_refused() {
     let (root, dest) = setup();
     fs::write(root.path().join("one.txt"), "x").unwrap();
     fs::hard_link(root.path().join("one.txt"), root.path().join("two.txt")).unwrap();
     fs::create_dir(root.path().join("folder.txt")).unwrap();
-    assert!(std::process::Command::new("mkfifo")
-        .arg(root.path().join("pipe.txt"))
-        .status()
-        .unwrap()
-        .success());
-    for rel in [
-        "one.txt",
-        "two.txt",
-        "folder.txt",
-        "pipe.txt",
-        "missing.txt",
-    ] {
+    for rel in ["one.txt", "two.txt", "folder.txt", "missing.txt"] {
         assert!(copy(root.path(), dest.path(), rel).is_err(), "{rel}");
     }
     assert!(
         fs::read_dir(dest.path()).unwrap().next().is_none(),
         "nothing was written"
     );
+}
+
+#[cfg(unix)]
+#[test]
+fn a_pipe_is_refused() {
+    let (root, dest) = setup();
+    assert!(std::process::Command::new("mkfifo")
+        .arg(root.path().join("pipe.txt"))
+        .status()
+        .unwrap()
+        .success());
+    assert!(copy(root.path(), dest.path(), "pipe.txt").is_err());
+    assert!(fs::read_dir(dest.path()).unwrap().next().is_none());
+}
+
+#[test]
+fn a_file_with_one_name_is_copied_again_after_its_twin_is_gone() {
+    let (root, dest) = setup();
+    fs::write(root.path().join("one.txt"), "x").unwrap();
+    fs::hard_link(root.path().join("one.txt"), root.path().join("two.txt")).unwrap();
+    assert!(copy(root.path(), dest.path(), "one.txt").is_err());
+    fs::remove_file(root.path().join("two.txt")).unwrap();
+    assert!(copy(root.path(), dest.path(), "one.txt").is_ok());
 }
 
 #[test]
@@ -146,6 +158,8 @@ fn path_escape_cannot_reach_a_file_outside_the_folder() {
         "../o.txt",
         "/etc/hostname",
         "a/../../o.txt",
+        "..\\o.txt",
+        "C:/Windows/win.ini",
         &outside.path().join("o.txt").to_string_lossy(),
     ] {
         assert!(copy(root.path(), dest.path(), rel).is_err(), "{rel}");
