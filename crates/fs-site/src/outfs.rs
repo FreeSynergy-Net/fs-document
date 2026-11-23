@@ -7,7 +7,7 @@
 
 use crate::error::SiteError;
 use sha2::{Digest, Sha256};
-use std::fs::{self, File, OpenOptions};
+use std::fs::{self, OpenOptions};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
@@ -143,7 +143,7 @@ impl Out {
                     dirs.push(p);
                 } else {
                     set_mode(&p, false)?;
-                    File::open(&p)?.set_modified(mtime)?;
+                    set_mtime(&p, mtime)?;
                 }
             }
             Ok(())
@@ -153,7 +153,7 @@ impl Out {
         dirs.push(self.root.clone());
         for d in dirs {
             set_mode(&d, true)?;
-            File::open(&d)?.set_modified(mtime)?;
+            set_mtime(&d, mtime)?;
         }
         Ok(())
     }
@@ -173,6 +173,12 @@ impl Out {
             }
         }
     }
+}
+
+/// Set the modification time of a file or folder. `filetime` opens a folder the way Windows needs
+/// (backup semantics); `File::open` of a folder or a read-only open of a file is refused there.
+pub(crate) fn set_mtime(path: &Path, mtime: SystemTime) -> std::io::Result<()> {
+    filetime::set_file_mtime(path, filetime::FileTime::from_system_time(mtime))
 }
 
 #[cfg(unix)]

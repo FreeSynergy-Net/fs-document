@@ -199,7 +199,7 @@ pub fn build_all(
     }
     // the folder that holds the sites was made by the build: its time is the release time too
     if made_root {
-        std::fs::File::open(out_root)?.set_modified(opt.mtime)?;
+        crate::outfs::set_mtime(out_root, opt.mtime)?;
     }
     Ok(out)
 }

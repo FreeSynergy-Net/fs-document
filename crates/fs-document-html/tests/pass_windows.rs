@@ -34,7 +34,7 @@ fn setup() -> (tempfile::TempDir, tempfile::TempDir, tempfile::TempDir) {
     (root, outside, dest)
 }
 
-fn refused(r: Result<Copied, PassError>, what: &str, dest: &Path) {
+fn refused(r: &Result<Copied, PassError>, what: &str, dest: &Path) {
     assert!(matches!(r, Err(PassError::NotRegular(_))), "{what}: {r:?}");
     assert!(
         std::fs::read_dir(dest).unwrap().next().is_none(),
@@ -65,7 +65,7 @@ fn a_file_symbolic_link_is_refused() {
         &root.path().join("real.txt"),
     );
     for rel in ["link.txt", "inner.txt"] {
-        refused(copy(root.path(), dest.path(), rel), rel, dest.path());
+        refused(&copy(root.path(), dest.path(), rel), rel, dest.path());
     }
 }
 
@@ -74,7 +74,7 @@ fn a_junction_on_the_way_is_refused() {
     let (root, o, dest) = setup();
     mklink(&["/J"], &root.path().join("dir"), o.path());
     refused(
-        copy(root.path(), dest.path(), "dir/secret.txt"),
+        &copy(root.path(), dest.path(), "dir/secret.txt"),
         "junction",
         dest.path(),
     );
@@ -85,7 +85,7 @@ fn a_directory_symbolic_link_on_the_way_is_refused() {
     let (root, o, dest) = setup();
     mklink(&["/D"], &root.path().join("dir"), o.path());
     refused(
-        copy(root.path(), dest.path(), "dir/secret.txt"),
+        &copy(root.path(), dest.path(), "dir/secret.txt"),
         "directory link",
         dest.path(),
     );
@@ -97,7 +97,7 @@ fn a_link_deeper_in_the_way_is_refused() {
     std::fs::create_dir(root.path().join("a")).unwrap();
     mklink(&["/J"], &root.path().join("a").join("b"), o.path());
     refused(
-        copy(root.path(), dest.path(), "a/b/secret.txt"),
+        &copy(root.path(), dest.path(), "a/b/secret.txt"),
         "deep junction",
         dest.path(),
     );
@@ -107,7 +107,7 @@ fn a_link_deeper_in_the_way_is_refused() {
 fn a_part_of_the_way_that_is_a_file_is_refused() {
     let (root, _o, dest) = setup();
     refused(
-        copy(root.path(), dest.path(), "real.txt/x.txt"),
+        &copy(root.path(), dest.path(), "real.txt/x.txt"),
         "file as folder",
         dest.path(),
     );
@@ -118,7 +118,7 @@ fn a_hard_link_is_refused() {
     let (root, _o, dest) = setup();
     std::fs::hard_link(root.path().join("real.txt"), root.path().join("twin.txt")).unwrap();
     for rel in ["real.txt", "twin.txt"] {
-        refused(copy(root.path(), dest.path(), rel), rel, dest.path());
+        refused(&copy(root.path(), dest.path(), rel), rel, dest.path());
     }
 }
 
