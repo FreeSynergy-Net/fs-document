@@ -9,4 +9,4 @@ permissions:
 
 jobs:
   check:
-    uses: FreeSynergy-Net/fs-release/.github/workflows/check.yml@9eed5c95eb7311f2b68266a012ec778f51e3ac38
+    uses: FreeSynergy-Net/fs-release/.github/workflows/check.yml@1e1376b2a9fee0815e90e5efa6d04440e477c755 # provisional: fs-release main (identity first check) until tag v0.0.7
