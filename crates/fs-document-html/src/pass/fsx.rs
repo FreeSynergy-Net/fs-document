@@ -164,36 +164,50 @@ pub fn open_plain(root: &Path, rel: &PassPath) -> Result<File, PassError> {
 /// Open `root/rel` for reading if it is a plain file reached without a link on the way and with
 /// one name only.
 ///
-/// No own `unsafe`: the walk runs inside a `cap-std` directory handle (the system call stays
-/// below `root`, also for `..`, drive letters and links), each part is looked at without following
-/// it, and the open file is checked on its handle.
+/// No own `unsafe`: the walk runs inside a `cap-std` directory handle. Nothing is followed: every
+/// part is opened with `open_dir_nofollow` / `FollowSymlinks::No` (`FILE_FLAG_OPEN_REPARSE_POINT`),
+/// so a part swapped for a link between a look and the open is opened as the link itself, and the
+/// check on the HANDLE sees it. The open through `NtCreateFile` with a root directory keeps the
+/// system call below `root`; links that were followed would be resolved by `cap-std`, so none are.
 pub fn open_plain(root: &Path, rel: &PassPath) -> Result<File, PassError> {
-    use cap_fs_ext::MetadataExt as _;
+    use cap_fs_ext::{DirExt as _, FollowSymlinks, MetadataExt as _, OpenOptionsFollowExt as _};
     use cap_std::ambient_authority;
-    use cap_std::fs::{Dir, MetadataExt as _};
+    use cap_std::fs::{Dir, MetadataExt as _, OpenOptions};
     /// `FILE_ATTRIBUTE_REPARSE_POINT`: symbolic link, junction, or any other reparse point.
     const REPARSE: u32 = 0x400;
+    let link = || PassError::NotRegular("symbolic link or junction");
+    // After a failed open: say what the part is (only on the error path, no decision rests on it).
+    let why = |dir: &Dir, seg: &str, e: std::io::Error| match dir.symlink_metadata(seg) {
+        Ok(m) if m.file_type().is_symlink() || m.file_attributes() & REPARSE != 0 => link(),
+        Ok(m) if !m.is_dir() => PassError::NotRegular("a part of the path is not a folder"),
+        _ => PassError::Io(e),
+    };
     let mut dir = Dir::open_ambient_dir(root, ambient_authority())?;
     let n = rel.segments().count();
     for (i, seg) in rel.segments().enumerate() {
-        let m = dir.symlink_metadata(seg)?;
-        // `is_symlink` is true for a symbolic link and a junction (mount point); the attribute
-        // catches every other reparse point.
-        if m.file_type().is_symlink() || m.file_attributes() & REPARSE != 0 {
-            return Err(PassError::NotRegular("symbolic link or junction"));
+        if i + 1 == n {
+            break;
         }
-        if i + 1 < n {
-            if !m.is_dir() {
-                return Err(PassError::NotRegular("a part of the path is not a folder"));
-            }
-            dir = dir.open_dir(seg)?;
+        let next = dir.open_dir_nofollow(seg).map_err(|e| why(&dir, seg, e))?;
+        // The handle IS the part: a junction or link opened as itself shows the attribute here.
+        if next.dir_metadata()?.file_attributes() & REPARSE != 0 {
+            return Err(link());
         }
+        dir = next;
     }
     let last = rel.segments().last().ok_or(PassError::EmptyPath)?;
-    let f = dir.open(last)?;
+    let f = dir
+        .open_with(
+            last,
+            OpenOptions::new().read(true).follow(FollowSymlinks::No),
+        )
+        .map_err(|e| why(&dir, last, e))?;
     // Look at the open handle, not at the path again.
     let m = f.metadata()?;
-    if !m.is_file() || m.file_attributes() & REPARSE != 0 {
+    if m.file_attributes() & REPARSE != 0 {
+        return Err(link());
+    }
+    if !m.is_file() {
         return Err(PassError::NotRegular("not a regular file"));
     }
     if m.nlink() != 1 {
