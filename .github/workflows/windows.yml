@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   windows:
-    uses: FreeSynergy-Net/fs-release/.github/workflows/_windows-check.yml@1e1376b2a9fee0815e90e5efa6d04440e477c755 # provisional: fs-release main (identity first check) until the pin wave onto a fs-release state
+    uses: FreeSynergy-Net/fs-release/.github/workflows/_windows-check.yml@7cfb2298bd4bcdb13f92c3651bfc8377fc30c7ed # provisional: fs-release main (identity first check) until the pin wave onto a fs-release state
     with:
       cache: ${{ github.event_name != 'workflow_dispatch' || inputs.cache }} # push: cache on; by hand: the input above
     #   (more, optional)
